@@ -1,0 +1,52 @@
+package main
+
+import (
+	"log/slog"
+	"net"
+)
+
+const defaultListenAddr
+
+type Config struct {
+	ListenAddr string
+}
+
+type Server struct {
+	Config
+	ln net.Listener
+}
+
+func NewServer(cfg Config) *Server {
+	if len(cfg.ListenAddr) == 0 {
+		cfg.ListenAddr = defaultListenAddr
+	}
+	return &Server{
+		Config: cfg,
+	}
+}
+
+func (s *Server) Start() error {
+	ln, err := net.Listen("tcp", s.ListenAddr)
+	if err != nil {
+		return err
+	}
+	s.ln = ln
+
+	go s.acceptLoop()
+	return nil
+
+}
+
+func (s *Server) acceptLoop() {
+	for {
+		conn, err := s.ln.Accept()
+		if err != nil {
+			slog.Error("accept error", err)
+			continue
+		}
+	}
+}
+
+func main() {
+
+}
