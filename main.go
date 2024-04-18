@@ -32,19 +32,22 @@ func (s *Server) Start() error {
 	}
 	s.ln = ln
 
-	go s.acceptLoop()
-	return nil
+	return s.acceptLoop()
 
 }
 
-func (s *Server) acceptLoop() {
+func (s *Server) acceptLoop() error {
 	for {
 		conn, err := s.ln.Accept()
 		if err != nil {
 			slog.Error("accept error", err)
 			continue
 		}
+		go s.handleConn(conn)
 	}
+}
+func (s *Server) handleConn(conn net.Conn) {
+
 }
 
 func main() {
