@@ -1,11 +1,12 @@
 package main
 
 import (
+	"fmt"
 	"log/slog"
 	"net"
 )
 
-const defaultListenAddr
+const defaultListenAddr = ":5001"
 
 type Config struct {
 	ListenAddr string
@@ -13,17 +14,10 @@ type Config struct {
 
 type Server struct {
 	Config
-	ln net.Listener
+	peers     map[*Peer]bool
+	ln        net.Listener
+	addPeerCh chan *Peer
 }
-                                                                                                             
-
-
-
-
-
-
-
-
 
 func NewServer(cfg Config) *Server {
 	if len(cfg.ListenAddr) == 0 {
@@ -31,6 +25,7 @@ func NewServer(cfg Config) *Server {
 	}
 	return &Server{
 		Config: cfg,
+		peers:  make(map[*Peer]bool),
 	}
 }
 
@@ -43,6 +38,16 @@ func (s *Server) Start() error {
 
 	return s.acceptLoop()
 
+}
+func (s *Server) loop() error {
+	for {
+		select {
+		case peer := <-s.addPeerCh:
+			s.peers[peer] = true
+		default:
+			fmt.Println("foo")
+		}
+	}
 }
 
 func (s *Server) acceptLoop() error {
@@ -59,4 +64,6 @@ func (s *Server) handleConn(conn net.Conn) {
 
 }
 
+func main() {
 
+}
